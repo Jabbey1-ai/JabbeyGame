@@ -29,6 +29,7 @@ function movePlayer(event) {
             break;
         case "Enter":
             shoot;
+            break;
     }
 
     updatePlayerPosition();
@@ -42,8 +43,7 @@ function updatePlayerPosition() {
     checkCollisions();
 }
 
-function shoot(event) {
-    if (event.key === "Enter") {
+function shoot() {
         const bullet = document.createElement("div");
         bullet.className = "bullet";
         bullet.style.left = playerLeft + "px";
@@ -64,7 +64,6 @@ function shoot(event) {
             gameContainer.removeChild(bullet);
             bullets = bullets.filter(b => b.element !== bullet);
         }, 2000);
-    }
 }
 
 function moveBullet(bullet) {
