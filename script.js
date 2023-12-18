@@ -9,7 +9,7 @@ let bullets = [];
 let enemies = [];
 
 document.addEventListener("keydown", movePlayer);
-document.addEventListener("keyup", shoot);
+//document.addEventListener("keyup", shoot);
 
 function movePlayer(event) {
     const speed = 5;
@@ -27,6 +27,8 @@ function movePlayer(event) {
         case "ArrowRight":
             playerLeft += speed;
             break;
+        case "Enter":
+            shoot;
     }
 
     updatePlayerPosition();
@@ -41,44 +43,45 @@ function updatePlayerPosition() {
 }
 
 function shoot(event) {
-    if (event.key === " ") {
+    if (event.key === "Enter") {
         const bullet = document.createElement("div");
         bullet.className = "bullet";
         bullet.style.left = playerLeft + "px";
         bullet.style.top = playerTop + "px";
         gameContainer.appendChild(bullet);
 
-        bullets.push(bullet);
+        bullets.push({ element: bullet, direction: getDirection() });
 
         // Move the bullet in the direction the player is facing
         const bulletSpeed = 8;
-        const direction = getDirection();
         const interval = setInterval(() => {
-            moveBullet(bullet, direction);
+            moveBullet(bullet);
         }, 20);
 
         // Remove the bullet after it goes off-screen
         setTimeout(() => {
             clearInterval(interval);
             gameContainer.removeChild(bullet);
-            bullets = bullets.filter(b => b !== bullet);
+            bullets = bullets.filter(b => b.element !== bullet);
         }, 2000);
     }
 }
 
-function moveBullet(bullet, direction) {
-    switch (direction) {
+function moveBullet(bullet) {
+    const bulletSpeed = 8;
+
+    switch (bullet.direction) {
         case "up":
-            bullet.style.top = parseInt(bullet.style.top) - 5 + "px";
+            bullet.element.style.top = parseInt(bullet.element.style.top) - bulletSpeed + "px";
             break;
         case "down":
-            bullet.style.top = parseInt(bullet.style.top) + 5 + "px";
+            bullet.element.style.top = parseInt(bullet.element.style.top) + bulletSpeed + "px";
             break;
         case "left":
-            bullet.style.left = parseInt(bullet.style.left) - 5 + "px";
+            bullet.element.style.left = parseInt(bullet.element.style.left) - bulletSpeed + "px";
             break;
         case "right":
-            bullet.style.left = parseInt(bullet.style.left) + 5 + "px";
+            bullet.element.style.left = parseInt(bullet.element.style.left) + bulletSpeed + "px";
             break;
     }
 
@@ -135,11 +138,11 @@ function checkCollisions() {
     // Check for collisions between bullets and enemies
     bullets.forEach(bullet => {
         enemies.forEach(enemy => {
-            if (isColliding(bullet, enemy)) {
-                gameContainer.removeChild(bullet);
+            if (isColliding(bullet.element, enemy)) {
+                gameContainer.removeChild(bullet.element);
                 gameContainer.removeChild(enemy);
 
-                bullets = bullets.filter(b => b !== bullet);
+                bullets = bullets.filter(b => b.element !== bullet.element);
                 enemies = enemies.filter(e => e !== enemy);
             }
         });
@@ -170,7 +173,7 @@ function gameOver() {
 
 function resetGame() {
     // Clear bullets and enemies from the screen
-    bullets.forEach(bullet => gameContainer.removeChild(bullet));
+    bullets.forEach(bullet => gameContainer.removeChild(bullet.element));
     enemies.forEach(enemy => gameContainer.removeChild(enemy));
 
     bullets = [];
