@@ -28,7 +28,7 @@ function movePlayer(event) {
             playerLeft += speed;
             break;
         case "Enter":
-            shoot;
+            shoot();
             break;
     }
 
